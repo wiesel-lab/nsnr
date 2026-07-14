@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Normalized signal-to-noise ratio for covariance estimation in target detection</title>
+<meta name="description" content="Closed-form worst-case NSNR, its KL divergence bound, and a KL-based LOOCV shrinkage covariance estimator for target detection.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1f2b;
+    --muted: #5b6472;
+    --paper: #ffffff;
+    --wash: #f5f6f8;
+    --accent: #1d4ed8;
+    --rule: #e3e6ea;
+    --maxw: 780px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.65;
+    font-size: 17px;
+  }
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+
+  header { padding: 72px 0 40px; text-align: center; }
+  h1 {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+  .authors { font-size: 1.05rem; margin-bottom: 6px; }
+  .authors a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  .authors a:hover { border-color: var(--accent); color: var(--accent); }
+  .affil { color: var(--muted); font-size: 0.95rem; margin-bottom: 4px; }
+  .venue { color: var(--muted); font-size: 0.95rem; font-style: italic; }
+
+  .links { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 28px; }
+  .links a {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 500;
+  }
+  .links a:hover { background: var(--accent); }
+
+  figure.teaser { margin: 28px 0 8px; text-align: center; }
+  figure.teaser img { max-width: 100%; border-radius: 8px; }
+  figcaption { color: var(--muted); font-size: 0.9rem; margin-top: 10px; }
+
+  section { padding: 36px 0; border-top: 1px solid var(--rule); }
+  h2 {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.45rem;
+    margin-bottom: 16px;
+  }
+  section p + p { margin-top: 14px; }
+
+  .abstract { background: var(--wash); border-radius: 10px; padding: 26px 28px; }
+
+  pre.bibtex {
+    background: var(--wash);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 20px 22px;
+    overflow-x: auto;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  footer { padding: 40px 0 56px; color: var(--muted); font-size: 0.9rem; text-align: center; }
+  footer a { color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <h1>Normalized signal-to-noise ratio for covariance estimation in target detection</h1>
+  <p class="authors">
+    Daniel Busbib<sup>1</sup>,
+    Tzvi Diskin<sup>1</sup>,
+    <a href="https://www.cs.huji.ac.il/~amiw/">Ami Wiesel</a><sup>1</sup>
+  </p>
+  <p class="affil"><sup>1</sup>School of Computer Science and Engineering, The Hebrew University of Jerusalem</p>
+  <p class="venue">Signal Processing, vol. 250, 2027</p>
+
+  <nav class="links">
+    <a href="https://doi.org/10.1016/j.sigpro.2026.110820">Paper (open access)</a>
+    <a href="https://github.com/wiesel-lab/nsnr">Code</a>
+  </nav>
+
+  <figure class="teaser">
+    <img src="static/teaser.png" alt="Tightness of the bound between the worst-case NSNR distance and the invariant KL divergence">
+    <figcaption>The worst-case NSNR distance is bounded by the invariant KL divergence (Theorem 2); the bound is tight when the interior eigenvalues of the matrix ratio sit at the arithmetic mean of the extremes.</figcaption>
+  </figure>
+</header>
+
+<section class="wrap">
+  <h2>Abstract</h2>
+  <div class="abstract">
+    <p>We address the Normalized Signal to Noise Ratio (NSNR) metric defined in the
+    seminal paper by Reed, Mallett, and Brennan on adaptive detection. NSNR is the
+    ratio between the SNR of a linear detector which uses an estimated noise
+    covariance and the SNR of a clairvoyant detector based on the exact unknown
+    covariance. It is not obvious how to evaluate NSNR since it is a function of
+    the target vector. To close this gap, we consider the NSNR associated with the
+    worst target. Using the Kantorovich Inequality, we provide a closed-form
+    solution for the worst-case NSNR. Then, we prove that the classical Gaussian
+    Kullback Leibler (KL) divergence bounds it. Motivated by these results, we
+    derive a simple variant of a classic norm based estimator by incorporating KL
+    in a leave-one-out cross-validation (LOOCV) framework. Numerical experiments
+    with different true covariances and various estimates suggest that the KL
+    metric is more correlated with the NSNR metric than competing norm-based
+    metrics and simply changing the metric in the LOOCV estimator improves KL and
+    NSNR performance.</p>
+  </div>
+</section>
+
+<section class="wrap">
+  <h2>Method</h2>
+  <p>Covariance estimates are usually scored with generic distances such as the
+  Frobenius norm, but in target detection what actually matters is the SNR loss
+  of the adaptive matched filter that uses the estimate. That loss &mdash; the NSNR of
+  Reed, Mallett and Brennan &mdash; depends on the unknown target vector, which makes
+  it hard to use as an accuracy metric. We eliminate this dependence by
+  considering the worst target: using the Kantorovich inequality, the worst-case
+  NSNR admits a closed-form expression that depends only on the extreme
+  eigenvalues of the matrix ratio between the true covariance and its estimate.</p>
+  <p>We then prove that this worst-case NSNR distance is upper bounded by the
+  classical Gaussian KL divergence (and by its scale-invariant variant), which
+  is smooth and much easier to optimize. This motivates using KL-based criteria
+  whenever detection performance is the end goal.</p>
+  <p>As an application, we revisit the classical shrinkage covariance estimator,
+  which normally selects its shrinkage parameter by a norm-based criterion
+  (Ledoit&ndash;Wolf). We instead select it by minimizing a leave-one-out
+  cross-validation approximation of the KL divergence, computed efficiently with
+  Sherman&ndash;Morrison rank-one updates. The change is one line conceptually, yet it
+  consistently improves both KL and NSNR performance.</p>
+</section>
+
+<section class="wrap">
+  <h2>Results</h2>
+  <p>Across Monte Carlo experiments, KL tracks the detection-oriented NSNR far
+  better than norm-based metrics: the Pearson correlation between KL and NSNR is
+  0.8, versus 0.3 for MSE. Against the empirical probability of detection of the
+  AMF detector, the correlations are &minus;0.82 (NSNR), &minus;0.75 (KL) and
+  only &minus;0.11 (NMSE).</p>
+  <figure class="teaser">
+    <img src="static/scatter.png" alt="Scatter plots showing NSNR against KL and against MSE">
+    <figcaption>NSNR against KL (left) and against normalized Frobenius MSE (right) over 1000 sample covariances: KL is strongly aligned with NSNR, the norm-based metric is not.</figcaption>
+  </figure>
+  <p>On synthetic Toeplitz and Kronecker covariances as well as real covariances
+  from the Pavia University hyperspectral dataset, the KL-based LOOCV shrinkage
+  estimator improves the NSNR, KL and detection AUC of its norm-based
+  counterpart.</p>
+</section>
+
+<section class="wrap">
+  <h2>Citation</h2>
+<pre class="bibtex">@article{busbib2027nsnr,
+  title   = {Normalized signal-to-noise ratio for covariance estimation in target detection},
+  author  = {Busbib, Daniel and Diskin, Tzvi and Wiesel, Ami},
+  journal = {Signal Processing},
+  volume  = {250},
+  pages   = {110820},
+  year    = {2027},
+  doi     = {10.1016/j.sigpro.2026.110820}
+}</pre>
+</section>
+
+<footer class="wrap">
+  <p><a href="https://www.cs.huji.ac.il/~amiw/">Wiesel Lab</a> · The Hebrew University of Jerusalem</p>
+</footer>
+
+</body>
+</html>
