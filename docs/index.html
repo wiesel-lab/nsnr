@@ -7,6 +7,14 @@
 <meta name="description" content="Closed-form worst-case NSNR, its KL divergence bound, and a KL-based LOOCV shrinkage covariance estimator for target detection.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']], displayMath: [['$$', '$$']] },
+    svg: { fontCache: 'global' },
+    options: { renderActions: { addMenu: [] } }
+  };
+</script>
+<script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <style>
   :root {
     --ink: #1a1f2b;
@@ -71,6 +79,25 @@
 
   .abstract { background: var(--wash); border-radius: 10px; padding: 22px 26px; }
 
+  .highlight {
+    text-align: left;
+    background: var(--wash);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 22px 28px 8px;
+    margin: 36px 0 0;
+    overflow-x: auto;
+  }
+  .highlight .thm {
+    font-family: "Source Serif 4", Georgia, serif;
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin-bottom: 6px;
+  }
+  .highlight p { font-size: 0.98rem; }
+  .highlight p + p { margin-top: 8px; }
+  .highlight .thm:not(:first-child) { margin-top: 22px; }
+
   pre.bibtex {
     background: var(--wash);
     border: 1px solid var(--rule);
@@ -109,10 +136,16 @@
     <a href="https://github.com/wiesel-lab/nsnr">Code</a>
   </nav>
 
-  <figure class="teaser">
-    <img src="static/teaser.png" alt="Tightness of the bound between the worst-case NSNR distance and the invariant KL divergence">
-    <figcaption>The worst-case NSNR distance is bounded by the invariant KL divergence (Theorem 2); the bound is tight when the interior eigenvalues of the matrix ratio sit at the arithmetic mean of the extremes.</figcaption>
-  </figure>
+  <div class="highlight">
+    <p class="thm">Theorem 1 &mdash; Worst-case NSNR.</p>
+    <p>For positive definite \(C\) and \(\hat{C}\) with matrix ratio \(Q = C\hat{C}^{-1}\), the worst-case NSNR has the closed form</p>
+    $$\mathrm{NSNR}_{\min}(C,\hat{C}) = \min_{s} \frac{(s^{H}\hat{C}^{-1}s)^{2}}{(s^{H}\hat{C}^{-1}C\hat{C}^{-1}s)(s^{H}C^{-1}s)} = \frac{q_{\min}\,q_{\max}}{\left(\dfrac{q_{\min}+q_{\max}}{2}\right)^{2}},$$
+    <p>where \(q_{\min}\) and \(q_{\max}\) are the extreme eigenvalues of \(Q\).</p>
+
+    <p class="thm">Theorem 2 &mdash; KL bounds the NSNR distance.</p>
+    $$d_{\mathrm{NSNR}}(C,\hat{C}) \;\le\; d_{\text{invariant KL}}(C,\hat{C}) \;\le\; d_{\mathrm{KL}}(C,\hat{C}),$$
+    <p>and the left inequality is an equality if and only if all interior eigenvalues of \(Q\) equal the arithmetic mean \((q_{\min}+q_{\max})/2\) of the two extreme eigenvalues.</p>
+  </div>
 </header>
 
 <section class="wrap">

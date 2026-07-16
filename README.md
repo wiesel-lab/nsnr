@@ -9,9 +9,19 @@ School of Computer Science and Engineering, The Hebrew University of Jerusalem
 Official implementation of *Normalized signal-to-noise ratio for covariance
 estimation in target detection* (Signal Processing, vol. 250, 2027).
 
-<p align="center">
-  <img src="docs/static/teaser.png" width="600" alt="Tightness of the bound in Theorem 2">
-</p>
+## Main results
+
+**Theorem 1 (worst-case NSNR).** For positive definite $C$ and $\hat{C}$ with matrix ratio $Q = C\hat{C}^{-1}$, the worst-case NSNR has the closed form
+
+$$\mathrm{NSNR}_{\min}(C,\hat{C}) = \min_{s} \frac{(s^{H}\hat{C}^{-1}s)^{2}}{(s^{H}\hat{C}^{-1}C\hat{C}^{-1}s)(s^{H}C^{-1}s)} = \frac{q_{\min} q_{\max}}{\left(\frac{q_{\min}+q_{\max}}{2}\right)^{2}},$$
+
+where $q_{\min}$ and $q_{\max}$ are the extreme eigenvalues of $Q$.
+
+**Theorem 2 (KL bounds the NSNR distance).**
+
+$$d_{\mathrm{NSNR}}(C,\hat{C}) \le d_{\text{invariant KL}}(C,\hat{C}) \le d_{\mathrm{KL}}(C,\hat{C}),$$
+
+and the left inequality holds with equality if and only if all interior eigenvalues of $Q$ equal the arithmetic mean $(q_{\min}+q_{\max})/2$ of the two extreme eigenvalues.
 
 ## Abstract
 
